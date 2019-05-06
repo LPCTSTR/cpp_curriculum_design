@@ -1,0 +1,182 @@
+//
+// Created by LPCTSTR_MSR on 2019/4/20.
+//
+#ifndef VideoBuffer
+#define VideoBuffer
+
+#include "Vpch.h"
+
+const string menu[35] = {
+        {"=================================================================================================================================="},
+        {"=                                                   LPCTSTR's Card Game    Beta 1.0                                              ="},
+        {"=================================================================================================================================="},
+        {"= Player info     =     =      Card(s) in Card Pool =                                                  =      Your Card list     ="},
+        {"= Card Number:    =     =============================                                                  ==========================="},
+        {"=                 =                                                                                    =                         ="},
+        {"=                 =                                                                                    =                         ="},
+        {"=                 =                                                                                    =                         ="},
+        {"========================================================================================================                         ="},
+        {"=                                                                                                      =                         ="},
+        {"========================================================================================================                         ="},
+        {"=                                                                                                      =                         ="},
+        {"=                                                                                                      =                         ="},
+        {"=                                                                                                      =                         ="},
+        {"=                                                                                                      =                         ="},
+        {"=                                                                                                      =                         ="},
+        {"=                                                                                                      =                         ="},
+        {"=                                                                                                      =                         ="},
+        {"=                                                                                                      =                         ="},
+        {"=                                                                                                      =                         ="},
+        {"=                                                                                                      =                         ="},
+        {"=                                                                                                      =                         ="},
+        {"=                                                                                                      =                         ="},
+        {"=                                                                                                      =                         ="},
+        {"=                                                                                                      =                         ="},
+        {"=                                                                                                      =                         ="},
+        {"=                                                                                                      =                         ="},
+        {"=                                                                                                      =                         ="},
+        {"=                                                                                                      =                         ="},
+        {"=                                                                                                      =                         ="},
+        {"=                                                                                                      =                         ="},
+        {"=                                                                                                      =                         ="},
+        {"========================================================================================================                         ="},
+        {"= INFO:                                                                                                =                         ="},
+        {"=================================================================================================================================="}
+};
+
+class Video {
+/**
+ * menu[5][105];  Your Card list的首位.----->[116]
+ * menu[33][105]; Your Card list的末位.
+ * menu[33][8];   Info首位
+ * menu[3][27];   Pool 内卡牌数
+ * menu[4][14];   玩家卡牌数
+ * menu[11][1];   Pool卡牌列表
+ * menu[9][50];   主窗口标题
+ * */
+    Video()  {
+	for(int i = 0;i<35;i++)
+            _menu[i]=menu[i];
+	}
+
+public:
+    void UpdateMenuTitle(string text) {
+        for (int i = 0; i < 50; i++)
+            _menu[9][25 + i] = ' ';
+        for (int i = 0; i < text.size(); i++)
+            _menu[9][50 - text.size() / 2 + i] = text[i];
+    }
+
+    void UpdatePlayerCard(string num) {
+        for (int i = 0; i < 4; i++)
+            _menu[4][14 + i] = ' ';
+        for (int i = 0; i < num.size(); i++)
+            _menu[4][14 + i] = num[i];
+    }
+
+    void UpdatePoolNum(string num) {
+        for (int i = 0; i < 4; i++)
+            _menu[3][27 + i] = ' ';
+        for (int i = 0; i < num.size(); i++)
+            _menu[3][27 + i] = num[i];
+    }
+
+    static Video *GetInstance() {
+        static Video p;
+        return &p;
+    }
+
+    string _menu[35];
+
+    void UpdateDisplay() {
+        system("mode con cols=130 lines=40");
+        system("cls");
+        for (int i = 0; i < 35; i++) {
+            cout << _menu[i];
+            cout << endl;
+        }
+    }
+
+    void UpdateInfo(string p) {
+        if (p.size() > 90)
+            p = "Only 90 characters are allowed at most.";
+        for (int i = 0; i < 80; i++)
+            _menu[33][8 + i] = ' ';
+        for (int i = 0; i < p.size(); i++)
+            _menu[33][8 + i] = p[i];
+    }
+
+    void UpdatePlayerCardList(vector<string> p) {
+        for(int i=0;i<28;i++)
+            for(int j = 0;j<24;j++)
+                _menu[i+5][105+j]=' ';
+        if (p.size() < 28)
+            for (int i = 0; i < p.size(); i++)
+                for (int j = 0; j < p[i].size(); j++)
+                    _menu[5 + i][105 + j] = p[i][j];
+        else {
+            for (int i = 0; i < 27; i++)
+                for (int j = 0; j < p[i].size(); j++)
+                    _menu[5 + i][105 + j] = p[i][j];
+            for (int i = 0; i < p.size() - 27; i++)
+                for (int j = 0; j < p[i+27].size(); j++)
+                    _menu[5 + i][116 + j] = p[i+27][j];
+        }
+    }
+
+    //  menu[11][1];   Pool卡牌列表
+    void UpdatePoolList(vector<string> text) {
+        if(text.size()==0) {
+            UpdateInfo("No Card in Pool");
+            UpdateMenuTitle("Main View");
+            return;
+        }
+        char buf[20][60];
+        for (int i = 0; i < 20; i++)
+            for (int j = 0; j < 60; j++) {
+                buf[i][j] = _menu[11 + i][10 + j];
+                _menu[11 + i][10 + j] = ' ';
+            }
+        for (int i = 0; i < text.size(); i++)
+            for (int j = 0; j < text[i].size(); j++)
+                _menu[11 + i%20][10 + j+18*(i/20)] = text[i][j];
+        UpdateDisplay();
+        system("pause >nul");
+        for (int i = 0; i < 20; i++)
+            for (int j = 0; j < 60; j++)
+                _menu[11 + i][10 + j] = buf[i][j];
+        UpdateMenuTitle("Main View");
+    }
+
+    const string msgbox[10] = {
+            "=----------------------------------------------------------=",
+            "=                          Alarm                           =",
+            "=----------------------------------------------------------=",
+            "=                                                          =",
+            "=                                                          =",
+            "=                                                          =",
+            "=                                                          =",
+            "=                                                          =",
+            "=                                                          =",
+            "=----------------------------------------------------------="
+    };
+
+    void MsgBox(string text) {
+        char buf[10][60];
+        for (int i = 0; i < 10; i++)
+            for (int j = 0; j < 60; j++) {
+                buf[i][j] = _menu[15 + i][30 + j];
+                _menu[15 + i][30 + j] = msgbox[i][j];
+            }
+        for (int i = 0; i < text.size(); i++)
+            _menu[20][60 - text.size() / 2 + i] = text[i];
+        UpdateDisplay();
+        system("pause > nul");
+        for (int i = 0; i < 10; i++)
+            for (int j = 0; j < 60; j++)
+                _menu[15 + i][30 + j] = buf[i][j];
+            UpdateMenuTitle("Main View");
+    }
+};
+
+#endif //CURRICULUM_WORK_POOL_PROXY_H

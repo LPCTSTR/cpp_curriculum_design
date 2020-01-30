@@ -27,7 +27,6 @@ Pool_Proxy::Pool_Proxy() {
 void Pool_Proxy::build(const vector<pair<string, string>> &CardTypeMap, int num) {
     CardInstNum = num;
     this->CardTypeMap = CardTypeMap;
-    this->CardTypeMap = CardTypeMap;
     pool.Init(CardTypeMap.size() * CardInstNum);
     cardFactory.setCardMap(CardTypeMap).SetSingleCardNum(num).PoolShuffle(pool);
 }
